@@ -1,0 +1,24 @@
+spring:
+  config:
+    activate:
+      on-profile: default
+#
+#  datasource:
+#    url: jdbc:mysql://127.0.0.1:3306/member?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: root
+#    password: wnsfo12!
+
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+
+jwt:
+  secret:
+    key: ${JWT_KEY}
+  token:
+    expired-time: ${JWT_EXPIRED}
+
+
+
