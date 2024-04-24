@@ -16,9 +16,9 @@ spring:
 
 jwt:
   secret:
-    key: ${JWT_KEY}
+    key: "thecommercethecommercethecommercethecommercethecommercethecommercethecommerce"
   token:
-    expired-time: ${JWT_EXPIRED}
+    expired-time: 86400000
 
 
 
