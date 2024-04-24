@@ -59,12 +59,12 @@ public class MemberEntity extends BasicTimeEntity implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return null;
+		return this.memberLoginId;
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -79,6 +79,6 @@ public class MemberEntity extends BasicTimeEntity implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return false;
+		return true;
 	}
 }
