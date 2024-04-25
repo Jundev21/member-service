@@ -1,7 +1,5 @@
 package com.commerce.memberservice.domain.member.entity;
 
-import java.sql.Array;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -34,6 +32,8 @@ public class MemberEntity extends BasicTimeEntity implements UserDetails {
 	private Long memberId;
 	@Column(name = "name")
 	private String memberName;
+	@Column(name = "nickname")
+	private String memberNickName;
 	@Column(name = "loginId")
 	private String memberLoginId;
 	@Column(name = "password")
@@ -42,41 +42,43 @@ public class MemberEntity extends BasicTimeEntity implements UserDetails {
 	private String memberEmail;
 	@Column(name = "phoneNumber")
 	private String memberPhoneNumber;
-	@Column(name = "age")
-	private String memberAge;
 	@Column(name = "role")
 	private UserRoles role = UserRoles.USER;
 
+	public MemberEntity(String memberName, String memberNickName, String memberLoginId,
+		String memberPassword, String memberEmail, String memberPhoneNumber, UserRoles role) {
+		this.memberName = memberName;
+		this.memberNickName = memberNickName;
+		this.memberLoginId = memberLoginId;
+		this.memberPassword = memberPassword;
+		this.memberEmail = memberEmail;
+		this.memberPhoneNumber = memberPhoneNumber;
+		this.role = role;
+	}
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return Collections.singleton(new SimpleGrantedAuthority(this.getRole().toString()));
 	}
-
 	@Override
 	public String getPassword() {
 		return null;
 	}
-
 	@Override
 	public String getUsername() {
 		return this.memberLoginId;
 	}
-
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;
 	}
-
 	@Override
 	public boolean isAccountNonLocked() {
 		return false;
 	}
-
 	@Override
 	public boolean isCredentialsNonExpired() {
 		return false;
 	}
-
 	@Override
 	public boolean isEnabled() {
 		return true;
