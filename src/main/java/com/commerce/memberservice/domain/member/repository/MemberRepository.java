@@ -9,5 +9,6 @@ import com.commerce.memberservice.domain.member.entity.MemberEntity;
 public interface MemberRepository extends JpaRepository<MemberEntity,Long> {
 
 	Optional<MemberEntity> findByMemberLoginId(String loginId);
+	Boolean existsByMemberLoginId(String loginId);
 
 }
