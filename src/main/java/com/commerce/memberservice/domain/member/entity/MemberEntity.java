@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "memberTable")
-public class MemberEntity extends BasicTimeEntity implements UserDetails {
+public class MemberEntity extends BasicTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
@@ -55,32 +55,5 @@ public class MemberEntity extends BasicTimeEntity implements UserDetails {
 		this.memberPhoneNumber = memberPhoneNumber;
 		this.role = role;
 	}
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singleton(new SimpleGrantedAuthority(this.getRole().toString()));
-	}
-	@Override
-	public String getPassword() {
-		return null;
-	}
-	@Override
-	public String getUsername() {
-		return this.memberLoginId;
-	}
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-	@Override
-	public boolean isAccountNonLocked() {
-		return false;
-	}
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return false;
-	}
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
+
 }
