@@ -9,12 +9,11 @@ import org.springframework.security.config.annotation.web.configurers.CorsConfig
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.commerce.memberservice.domain.member.service.MemberService;
-import com.commerce.memberservice.jwt.JwtFilter;
+import com.commerce.memberservice.filter.JwtFilter;
+import com.commerce.memberservice.filter.auth.MemberDetailService;
 import com.commerce.memberservice.jwt.JwtTokenInfo;
 
 import lombok.RequiredArgsConstructor;
@@ -25,16 +24,9 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final JwtTokenInfo jwtTokenInfo;
-	private final MemberService memberService;
-
-
+	private final MemberDetailService memberDetailService;
 	@Bean
-	public BCryptPasswordEncoder encoderPassword(){
-		return new BCryptPasswordEncoder();
-	}
-
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
+	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
 			.httpBasic(AbstractHttpConfigurer::disable)
 			.csrf(CsrfConfigurer::disable)
@@ -45,8 +37,7 @@ public class SecurityConfig {
 				.anyRequest().authenticated())
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.addFilterAt(new JwtFilter(jwtTokenInfo,memberService), UsernamePasswordAuthenticationFilter.class);
-
+			.addFilterBefore(new JwtFilter(jwtTokenInfo,memberDetailService), UsernamePasswordAuthenticationFilter.class);
 		return httpSecurity.build();
 	}
 }

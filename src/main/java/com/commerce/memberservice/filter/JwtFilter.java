@@ -1,4 +1,4 @@
-package com.commerce.memberservice.jwt;
+package com.commerce.memberservice.filter;
 
 import java.io.IOException;
 
@@ -10,10 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.commerce.memberservice.domain.member.entity.MemberEntity;
-import com.commerce.memberservice.domain.member.service.MemberService;
+import com.commerce.memberservice.filter.auth.MemberDetailService;
+import com.commerce.memberservice.jwt.JwtTokenInfo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,19 +28,17 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtTokenInfo jwtTokenInfo;
-	private final MemberService memberService;
-
+	private final MemberDetailService memberDetailService;
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		try {
 			final String getHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 			final String bearerToken = "Bearer ";
 			String jwtToken = null;
 
 			// 토큰이 없는 상태일경우
-			if (!getHeader.contains(bearerToken)) {
+			if (getHeader == null || !getHeader.contains(bearerToken)) {
 				filterChain.doFilter(request, response);
 				return;
 			} else {
@@ -54,25 +54,20 @@ public class JwtFilter extends OncePerRequestFilter {
 
 				String userLoginId = jwtTokenInfo.extractLoginId(jwtToken);
 
-				//여기서 데이터베이스에있는지 다시한번 체크
+				//여기서 데이터베이스에있는지 체크
 				//데이터 체크가 완료됐으면 다음 UsernameToken 을 통하여 인증을 거친다.
 				//AbstractAuthenticationToken은 Authentication을 상속받는다는 것을 알 수 있다.
 				//즉, UsernamePasswordAuthenticationToken은 추후 인증이 끝나고 SecurityContextHolder.getContext()에 등록될 Authentication 객체이다.
 
-				MemberEntity member = memberService.checkValidMember(userLoginId);
-
+				UserDetails memberDetails = memberDetailService.loadUserByUsername(userLoginId);
 				UsernamePasswordAuthenticationToken authenticationToken
-					= new UsernamePasswordAuthenticationToken(member, null, member.getAuthorities());
+					= new UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.getAuthorities());
 
+				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				filterChain.doFilter(request, response);
 			}
 
-		} catch (RuntimeException e) {
-			log.error("헤더에 토큰이 없습니다.");
-			filterChain.doFilter(request, response);
-			return;
-		}
 
 	}
 }
