@@ -62,10 +62,14 @@ Domain 기준으로 Controller , DTO, Entity, Repository, Service 형태로 파�
     - 회원가입
     - 회원정보 수정
     - 회원정보 조회
+    - 필터링 커스텀
+    - 응답 및 에러핸들링
     - 
+  
 ## 포스트맨
+
 - 회원등록
-  <img width="1303" alt="Screenshot 2024-04-28 at 5 58 21 AM" src="https://github.com/WePlanPlans/WPP_BE/assets/55421772/87a3336f-17c3-429c-8a28-303f6d7296c5">
+<img width="1303" alt="Screenshot 2024-04-28 at 5 58 21 AM" src="https://github.com/WePlanPlans/WPP_BE/assets/55421772/87a3336f-17c3-429c-8a28-303f6d7296c5">
 
 - 로그인
 <img width="1299" alt="Screenshot 2024-04-28 at 5 58 31 AM" src="https://github.com/WePlanPlans/WPP_BE/assets/55421772/4ac9cbda-e87e-4013-b167-04bb5eda6aa9">
