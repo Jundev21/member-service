@@ -1,14 +1,15 @@
-# member API service 
+# member service 
 
-1. 회원등록 API
-2. 회원 정보 수정 API
-3. 회원 리스트 검색 API
+1. 회원등록 API - (/api/user/join)
+2. 회원 로그인 API - (/api/user/login)
+3. 회원 정보 수정 API - (/api/user/{loginId})
+4. 회원 리스트 검색 API - (/api/user/list)
 
-회원 API 을 작성하기위해서 회원 정보를 인증이 필요하기때문에 이런 부분은 JWT 를 활용하였습니다. 
+사용자에 관한 기본적인 회원등록,로그인, 회원정보 조회, 회원 정보 수정을 구성하였으며 Spring Security JWT 를 활용하여 로그인 회원가입을 구현하였습니다. 
+회원가입을 거쳐 로그인을 할 시 JWT 토큰이 생성되며 토큰을 통하여 사용자 회원조회, 회원수정이 이뤄집니다.  
 
 ## 회원 서비스 파일 구조
-
-크게 Domain을 기준으로 나눠서 파일구조를 작성했습니다.
+Domain 기준으로 Controller , DTO, Entity, Repository, Service 형태로 파일을 구성하였습니다.  
 ```
 ├── main
 │   ├── generated
@@ -18,12 +19,10 @@
 │   │           └── memberservice
 │   │               ├── MemberServiceApplication.java
 │   │               ├── common
-│   │               │   ├── BasicException.java
-│   │               │   └── BasicResponse.java
+│   │               │   ├── exception
+│   │               │           └── securityException
+│   │               │   ├── BasicResponse
 │   │               ├── config
-│   │               │   ├── JwtConfig.java
-│   │               │   ├── PasswordEncoderConfig.java
-│   │               │   └── SwaggerConfig.java
 │   │               ├── domain
 │   │               │   └── membmer
 │   │               │      ├── controller
@@ -33,7 +32,34 @@
 │   │               │      ├── entity
 │   │               │      ├── reposiroty
 │   │               │      └── service
+│   │               ├── filter
+│   │               │   └── auth
+│   │               └── jwt
 │   └── resources
 │       ├── application.yml
 └── test
+│   ├── java
+│   │   └── com
+│   │       └── commerce
+│   │           └── memberservice
+│   │               ├── domain
+│   │               ├── controller
+│   │               ├── repository
+│   │               ├── service
+│
+
 ```
+## 프로젝트 구조
+![Screenshot 2024-04-28 at 5 42 25 AM](https://github.com/YBEMiniProjectTeam/MINI-Back/assets/55421772/361159a6-2998-4498-b90b-85400048abf8)
+
+## 개발 환경
+- 개발 언어: `Java 8`
+- 개발 환경 : `Spring Boot 2.7.0` , `Gradle`
+    - 라이브러리 / 의존성 : `Spring Web` , `Spring Security`, `JUnit`, `JWT Token`, `JPA`, `Lombok`, `H2` , `Swagger`, `Validation`, `Mysql` 
+- 로컬 Swagger URL : http://localhost:8080/swagger-ui/index.html
+- 기능 :
+    - 로그인
+    - 회원가입
+    - 회원정보 수정
+    - 회원정보 조회
+    
