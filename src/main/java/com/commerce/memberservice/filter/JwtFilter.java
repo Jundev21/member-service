@@ -33,10 +33,10 @@ public class JwtFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-			final String getHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-			final String bearerToken = "Bearer ";
-			String jwtToken = null;
-
+		final String getHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+		final String bearerToken = "Bearer ";
+		String jwtToken = null;
+		try {
 			// 토큰이 없는 상태일경우
 			if (getHeader == null || !getHeader.contains(bearerToken)) {
 				filterChain.doFilter(request, response);
@@ -67,7 +67,11 @@ public class JwtFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				filterChain.doFilter(request, response);
 			}
-
+		} catch (RuntimeException e) {
+			log.error("헤더를 가지고 오지 못했습니다.", e.toString());
+			filterChain.doFilter(request, response);
+			return;
+		}
 
 	}
 }
