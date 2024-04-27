@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.commerce.memberservice.common.exception.SecurityException;
 import com.commerce.memberservice.filter.JwtFilter;
 import com.commerce.memberservice.filter.auth.MemberDetailService;
 import com.commerce.memberservice.jwt.JwtTokenInfo;
@@ -25,6 +26,7 @@ public class SecurityConfig {
 
 	private final JwtTokenInfo jwtTokenInfo;
 	private final MemberDetailService memberDetailService;
+	private final SecurityException securityException;
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
@@ -37,7 +39,14 @@ public class SecurityConfig {
 				.anyRequest().authenticated())
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.addFilterBefore(new JwtFilter(jwtTokenInfo,memberDetailService), UsernamePasswordAuthenticationFilter.class);
+			.addFilterBefore(new JwtFilter(jwtTokenInfo, memberDetailService),
+				UsernamePasswordAuthenticationFilter.class)
+			.exceptionHandling(
+				exceptionHandling -> exceptionHandling
+					.authenticationEntryPoint(securityException)
+			);
+
 		return httpSecurity.build();
 	}
+
 }

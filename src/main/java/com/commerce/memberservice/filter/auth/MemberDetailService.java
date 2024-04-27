@@ -20,7 +20,7 @@ public class MemberDetailService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
 		MemberEntity member= memberRepository.findByMemberLoginId(loginId)
-			.orElseThrow((() -> new BasicException(ErrorCode.NotFoundMember, ErrorCode.NotFoundMember.getMsg())));
+			.orElseThrow((() -> new BasicException(ErrorCode.NOT_EXIST_MEMBER, ErrorCode.NOT_EXIST_MEMBER.getMsg())));
 		return new MemberDetail(member);
 	}
 }
