@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.commerce.memberservice.common.ConstantSortValue;
 import com.commerce.memberservice.common.basicResponse.BasicResponse;
 import com.commerce.memberservice.common.basicResponse.DataResponse;
+import com.commerce.memberservice.common.exception.BasicException;
+import com.commerce.memberservice.common.exception.ErrorCode;
 import com.commerce.memberservice.domain.member.dto.Request.MemberEditInfoDto;
 import com.commerce.memberservice.domain.member.dto.Request.MemberLoginDto;
 import com.commerce.memberservice.domain.member.dto.Request.MemberRegisterDto;
@@ -31,7 +34,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
 
 @Tag(name = "Member Service API")
 @RestController
@@ -133,6 +135,9 @@ public class MemberController {
 		@RequestParam(value = "pageSize", required = false, defaultValue = "2") int pageSize,
 		@RequestParam(value = "sort", required = false, defaultValue = "createdDate") String sort
 	) {
+		if (!sort.equals(ConstantSortValue.NAME) && !sort.equals(ConstantSortValue.CREATED_DATE)) {
+			throw new BasicException(ErrorCode.INVALID_SORT_VALUE, ErrorCode.INVALID_SORT_VALUE.getMsg());
+		}
 		return DataResponse.successBodyResponse(HttpStatus.OK,
 			memberService.memberList(PageRequest.of(pageNum, pageSize, Sort.by(sort).ascending())));
 	}

@@ -1,12 +1,18 @@
 # member service 
 
-1. 회원등록 API - (/api/user/join)
+1. 회원 가입 API - (/api/user/join)
 2. 회원 로그인 API - (/api/user/login)
 3. 회원 정보 수정 API - (/api/user/{loginId})
-4. 회원 리스트 검색 API - (/api/user/list)
+4. 회원 리스트 검색 API - (/api/user/list?page=0&pageSize=2&sort=createdDate)
 
 사용자에 관한 기본적인 회원등록,로그인, 회원정보 조회, 회원 정보 수정을 구성하였으며 Spring Security JWT 를 활용하여 로그인 회원가입을 구현하였습니다. 
-회원가입을 거쳐 로그인을 할 시 JWT 토큰이 생성되며 토큰을 통하여 사용자 회원조회, 회원수정이 이뤄집니다.  
+회원가입을 거쳐 로그인을 할 시 JWT 토큰이 생성되며 토큰을 통하여 사용자 회원조회, 회원수정이 이뤄집니다.
+
+회원 리스트 검색시 쿼리스트링 값으로 page / pageSize / sort 가 들어가며
+page 는 페이지 수 
+pageSize 는 해당 페이지에 몇개의 데이터를 보여줄 것인지
+sort 는 정렬 기준이며 가입일 순 정렬은 createdDate / 이름순은 memberName 으로 조회가 가능합니다. 
+
 
 ## 회원 서비스 파일 구조
 Domain 기준으로 Controller , DTO, Entity, Repository, Service 형태로 파일을 구성하였습니다.  
