@@ -22,7 +22,9 @@ import com.commerce.memberservice.common.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UnAuthorizedException implements AuthenticationEntryPoint {
@@ -42,6 +44,7 @@ public class UnAuthorizedException implements AuthenticationEntryPoint {
 		}else{
 			errorMessage = ErrorCode.UNAUTHORIZED_USER.getMsg();
 			errorCode = ErrorCode.UNAUTHORIZED_USER.getStatus();
+
 		}
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -52,5 +55,6 @@ public class UnAuthorizedException implements AuthenticationEntryPoint {
 					DataResponse.failBodyResponse(errorCode, errorMessage)
 				)
 			);
+		log.error(errorMessage +" " +errorCode);
 	}
 }

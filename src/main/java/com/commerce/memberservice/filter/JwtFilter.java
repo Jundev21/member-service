@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.commerce.memberservice.common.exception.ErrorCode;
 import com.commerce.memberservice.filter.auth.MemberDetailService;
 import com.commerce.memberservice.jwt.JwtTokenInfo;
 
@@ -48,7 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
 				jwtToken = getHeader.split(" ")[1].trim();
 
 				if (jwtTokenInfo.isValidToken(jwtToken)) {
-					System.out.println("토큰 만료됨");
+					log.error(ErrorCode.INVALID_TOKEN.getMsg());
 					filterChain.doFilter(request, response);
 					return;
 				}
@@ -69,7 +70,7 @@ public class JwtFilter extends OncePerRequestFilter {
 				filterChain.doFilter(request, response);
 			}
 		} catch (RuntimeException e) {
-			log.error("헤더를 가지고 오지 못했습니다.", e.toString());
+			log.error("토큰 필터링 스킵");
 			filterChain.doFilter(request, response);
 			return;
 		}
