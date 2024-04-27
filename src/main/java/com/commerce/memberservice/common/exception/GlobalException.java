@@ -9,7 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.commerce.memberservice.common.BasicResponse.DataResponse;
+import com.commerce.memberservice.common.basicResponse.DataResponse;
 
 import lombok.extern.slf4j.Slf4j;
 

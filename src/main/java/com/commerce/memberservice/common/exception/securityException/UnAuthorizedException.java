@@ -1,7 +1,6 @@
-package com.commerce.memberservice.common.exception.SecurityException;
+package com.commerce.memberservice.common.exception.securityException;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,13 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.commerce.memberservice.common.BasicResponse.DataResponse;
+import com.commerce.memberservice.common.basicResponse.DataResponse;
 import com.commerce.memberservice.common.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -164,6 +164,7 @@ class MemberControllerTest {
 
 		@Test
 		@DisplayName("회원정보 수정 성공")
+		@WithMockUser
 		// @WithMockUser(username = "gildong123", password = "testT12!")
 		public void successMemberEditInfoByValid() throws Exception {
 			MemberEntity member =

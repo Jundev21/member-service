@@ -12,7 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.commerce.memberservice.common.exception.SecurityException.UnAuthorizedException;
+import com.commerce.memberservice.common.exception.securityException.UnAuthorizedException;
 import com.commerce.memberservice.filter.JwtFilter;
 import com.commerce.memberservice.filter.auth.MemberDetailService;
 import com.commerce.memberservice.jwt.JwtTokenInfo;

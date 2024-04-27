@@ -1,4 +1,4 @@
-package com.commerce.memberservice.common.BasicResponse;
+package com.commerce.memberservice.common.basicResponse;
 
 import org.springframework.http.HttpStatus;
 
