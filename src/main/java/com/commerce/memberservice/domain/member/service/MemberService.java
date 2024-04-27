@@ -1,5 +1,10 @@
 package com.commerce.memberservice.domain.member.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,7 +19,9 @@ import com.commerce.memberservice.domain.member.dto.Request.MemberEditInfoDto;
 import com.commerce.memberservice.domain.member.dto.Request.MemberLoginDto;
 import com.commerce.memberservice.domain.member.dto.Request.MemberRegisterDto;
 import com.commerce.memberservice.domain.member.dto.Response.LoginResponseDto;
+import com.commerce.memberservice.domain.member.dto.Response.MemberBasicResponse;
 import com.commerce.memberservice.domain.member.dto.Response.MemberEditInfoResponseDto;
+import com.commerce.memberservice.domain.member.dto.Response.MemberListResponseDto;
 import com.commerce.memberservice.domain.member.entity.MemberEntity;
 import com.commerce.memberservice.domain.member.repository.MemberRepository;
 import com.commerce.memberservice.filter.auth.MemberDetail;
@@ -57,7 +64,7 @@ public class MemberService {
 		);
 		MemberDetail memberDetail = (MemberDetail)authentication.getPrincipal();
 		String generatedJwtToken = jwtTokenInfo.generateToken(memberDetail.getUsername());
-		System.out.println(generatedJwtToken);
+
 		return LoginResponseDto.builder()
 			.jwtToken(generatedJwtToken)
 			.build();
@@ -85,11 +92,26 @@ public class MemberService {
 	}
 
 	@Transactional(readOnly = true)
+	public MemberListResponseDto memberList(Pageable pageable) {
+		Page<MemberEntity> memberList = memberRepository.findAll(pageable);
+		List<MemberBasicResponse> memberBasicResponse
+			= memberList.getContent().stream().map(MemberBasicResponse::fromEntity
+		).collect(Collectors.toList());
+
+		return MemberListResponseDto.builder()
+			.memberList(memberBasicResponse)
+			.pageNo(memberList.getNumber())
+			.pageSize(memberList.getSize())
+			.totalElements(memberList.getTotalElements())
+			.totalPages(memberList.getTotalPages())
+			.build();
+	}
+
+	@Transactional(readOnly = true)
 	public void checkExistMember(String loginId) {
 		Boolean isExistMember = memberRepository.existsByMemberLoginId(loginId);
 		if (isExistMember) {
 			throw new BasicException(ErrorCode.ALREADY_EXIST_MEMBER, ErrorCode.ALREADY_EXIST_MEMBER.getMsg());
 		}
 	}
-
 }
