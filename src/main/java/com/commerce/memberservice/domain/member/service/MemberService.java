@@ -81,6 +81,7 @@ public class MemberService {
 			.memberLoginId(member.getMemberLoginId())
 			.memberEmail(member.getMemberEmail())
 			.memberPhoneNumber(member.getMemberPhoneNumber())
+			.modifiedDate(member.getModifiedDate())
 			.build();
 	}
 

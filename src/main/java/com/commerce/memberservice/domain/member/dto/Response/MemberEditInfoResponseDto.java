@@ -1,5 +1,7 @@
 package com.commerce.memberservice.domain.member.dto.Response;
 
+import java.time.LocalDateTime;
+
 import javax.validation.constraints.NotBlank;
 
 import lombok.AccessLevel;
@@ -18,4 +20,5 @@ public class MemberEditInfoResponseDto {
 	private String memberLoginId;
 	private String memberEmail;
 	private String memberPhoneNumber;
+	private LocalDateTime modifiedDate;
 }

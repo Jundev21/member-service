@@ -22,5 +22,5 @@ public class BasicTimeEntity {
 	private LocalDateTime createdDate;
 	@LastModifiedDate
 	@Column(name = "modifiedDate")
-	private LocalDateTime deletedDate;
+	private LocalDateTime modifiedDate;
 }
