@@ -27,6 +27,9 @@ public class SecurityConfig {
 	private final JwtTokenInfo jwtTokenInfo;
 	private final MemberDetailService memberDetailService;
 	private final UnAuthorizedException unAuthorizedException;
+	private static final String[] SWAGGER_PAGE = {
+		"/swagger-ui/**", "/v3/api-docs/**", "/api-docs/**"
+	};
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
@@ -36,6 +39,7 @@ public class SecurityConfig {
 			.formLogin(FormLoginConfigurer::disable)
 			.authorizeHttpRequests(request -> request
 				.antMatchers("/", "/api/user/join", "/api/user/login").permitAll()
+				.antMatchers(SWAGGER_PAGE).permitAll()
 				.anyRequest().authenticated())
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

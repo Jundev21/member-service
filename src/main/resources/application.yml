@@ -7,7 +7,7 @@ spring:
 #    url: jdbc:mysql://127.0.0.1:3306/member?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    username: root
-#    password: wnsfo12!
+#    password: 1234
 
   jpa:
     open-in-view: true
@@ -19,6 +19,10 @@ jwt:
     key: "thecommercethecommercethecommercethecommercethecommercethecommercethecommerce"
   token:
     expired-time: 86400000
+
+  swagger-ui:
+    path: /swagger-ui
+    enabled: true
 
 
 
