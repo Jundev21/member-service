@@ -3,9 +3,6 @@ package com.commerce.memberservice.domain.member.service;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,13 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.commerce.memberservice.common.UserRoles;
 import com.commerce.memberservice.common.exception.BasicException;
 import com.commerce.memberservice.common.exception.ErrorCode;
+import com.commerce.memberservice.domain.member.dto.Request.MemberEditInfoDto;
 import com.commerce.memberservice.domain.member.dto.Request.MemberLoginDto;
 import com.commerce.memberservice.domain.member.dto.Request.MemberRegisterDto;
 import com.commerce.memberservice.domain.member.dto.Response.LoginResponseDto;
+import com.commerce.memberservice.domain.member.dto.Response.MemberEditInfoResponseDto;
 import com.commerce.memberservice.domain.member.entity.MemberEntity;
 import com.commerce.memberservice.domain.member.repository.MemberRepository;
 import com.commerce.memberservice.filter.auth.MemberDetail;
-import com.commerce.memberservice.filter.auth.MemberDetailService;
 import com.commerce.memberservice.jwt.JwtTokenInfo;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +30,6 @@ public class MemberService {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final JwtTokenInfo jwtTokenInfo;
 	private final AuthenticationManager authenticationManager;
-	;
 
 	@Transactional
 	public void memberRegister(MemberRegisterDto memberRegisterInfo) {
@@ -66,17 +63,33 @@ public class MemberService {
 			.build();
 	}
 
-	@Transactional(readOnly = true)
-	public MemberEntity checkValidMember(String loginId) {
-		return memberRepository.findByMemberLoginId(loginId)
-			.orElseThrow((() -> new BasicException(ErrorCode.NotFoundMember, ErrorCode.NotFoundMember.getMsg())));
+	@Transactional
+	public MemberEditInfoResponseDto memberEditInfo(String loginId, MemberEditInfoDto memberEditInfoDto) {
+		MemberEntity member = checkValidMemberByLoginId(loginId);
+		member.updateMemberEntity(memberEditInfoDto);
+
+		return MemberEditInfoResponseDto.builder()
+			.memberName(member.getMemberName())
+			.memberNickName(member.getMemberNickName())
+			.memberLoginId(member.getMemberLoginId())
+			.memberEmail(member.getMemberEmail())
+			.memberPhoneNumber(member.getMemberPhoneNumber())
+			.build();
 	}
 
 	@Transactional(readOnly = true)
-	private void checkExistMember(String loginId) {
+	public MemberEntity checkValidMemberByLoginId(String loginId) {
+		return memberRepository.findByMemberLoginId(loginId)
+			.orElseThrow(
+				(() -> new BasicException(ErrorCode.NOT_EXIST_MEMBER, ErrorCode.NOT_EXIST_MEMBER.getMsg())));
+	}
+
+	@Transactional(readOnly = true)
+	public void checkExistMember(String loginId) {
 		Boolean isExistMember = memberRepository.existsByMemberLoginId(loginId);
 		if (isExistMember) {
-			throw new BasicException(ErrorCode.AlreadyExistMember, ErrorCode.AlreadyExistMember.getMsg());
+			throw new BasicException(ErrorCode.ALREADY_EXIST_MEMBER, ErrorCode.ALREADY_EXIST_MEMBER.getMsg());
 		}
 	}
+
 }

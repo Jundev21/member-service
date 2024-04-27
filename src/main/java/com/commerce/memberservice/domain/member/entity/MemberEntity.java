@@ -1,8 +1,5 @@
 package com.commerce.memberservice.domain.member.entity;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,12 +7,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.commerce.memberservice.common.BasicTimeEntity;
 import com.commerce.memberservice.common.UserRoles;
+import com.commerce.memberservice.domain.member.dto.Request.MemberEditInfoDto;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -56,4 +50,11 @@ public class MemberEntity extends BasicTimeEntity {
 		this.role = role;
 	}
 
+	public void updateMemberEntity(MemberEditInfoDto memberEditInfoDto) {
+		this.memberName = memberEditInfoDto.getMemberName();
+		this.memberNickName = memberEditInfoDto.getMemberNickName();
+		this.memberPassword = memberEditInfoDto.getMemberPassword();
+		this.memberEmail = memberEditInfoDto.getMemberEmail();
+		this.memberPhoneNumber = memberEditInfoDto.getMemberPhoneNumber();
+	}
 }
