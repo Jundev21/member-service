@@ -47,7 +47,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
 				jwtToken = getHeader.split(" ")[1].trim();
 
-				if (!jwtTokenInfo.isValidToken(jwtToken)) {
+				if (jwtTokenInfo.isValidToken(jwtToken)) {
+					System.out.println("토큰 만료됨");
 					filterChain.doFilter(request, response);
 					return;
 				}
