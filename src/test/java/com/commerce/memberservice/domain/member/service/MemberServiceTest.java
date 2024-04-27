@@ -4,22 +4,24 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -27,12 +29,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import com.commerce.memberservice.common.UserRoles;
 import com.commerce.memberservice.common.exception.BasicException;
 import com.commerce.memberservice.common.exception.ErrorCode;
-import com.commerce.memberservice.common.exception.SecurityException;
 import com.commerce.memberservice.domain.member.dto.Request.MemberEditInfoDto;
 import com.commerce.memberservice.domain.member.dto.Request.MemberLoginDto;
 import com.commerce.memberservice.domain.member.dto.Request.MemberRegisterDto;
 import com.commerce.memberservice.domain.member.dto.Response.LoginResponseDto;
+import com.commerce.memberservice.domain.member.dto.Response.MemberBasicResponse;
 import com.commerce.memberservice.domain.member.dto.Response.MemberEditInfoResponseDto;
+import com.commerce.memberservice.domain.member.dto.Response.MemberListResponseDto;
 import com.commerce.memberservice.domain.member.entity.MemberEntity;
 import com.commerce.memberservice.domain.member.repository.MemberRepository;
 import com.commerce.memberservice.filter.auth.MemberDetail;
@@ -253,6 +256,43 @@ public class MemberServiceTest {
 				.containsExactly("홍길동수정", "길동무수정", "gildong123", "edited@gmail.com", "010-1234-1234");
 
 		}
+
+		@Nested
+		@WithMockUser
+		@DisplayName("회원정보 조회 테스트")
+		public class MemberSearchList {
+			@Test
+			@DisplayName("회원조회가 가능하다.")
+			public void successSearchMemberList() throws Exception {
+				//given
+				List<MemberEntity> member = new ArrayList<>();
+				for (int i = 0; i < 5; i++) {
+					member.add(
+						new MemberEntity(
+							"홍길동" + i,
+							"길동무",
+							"gildong123",
+							"testT12!",
+							"dongmu@gmail.com",
+							"010-1234-1234",
+							UserRoles.USER
+						)
+					);
+				}
+				Pageable pageable = PageRequest.of(0, 5, Sort.by("memberName").ascending());
+				Page<MemberEntity> memberList = new PageImpl<>(member);
+				//when
+				when(memberRepository.findAll(any(Pageable.class))).thenReturn((memberList));
+				MemberListResponseDto result = memberService.memberList(pageable);
+				//then
+				assertNotNull(result);
+				assertThat(
+					result.getMemberList().stream().map(MemberBasicResponse::getMemberName)).usingRecursiveComparison()
+					.isEqualTo(member.stream().map(MemberEntity::getMemberName).collect(Collectors.toList()));
+			}
+
+		}
+
 	}
 
 }

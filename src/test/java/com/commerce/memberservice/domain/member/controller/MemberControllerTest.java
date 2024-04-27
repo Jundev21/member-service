@@ -4,6 +4,10 @@ import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,10 +27,11 @@ import com.commerce.memberservice.common.UserRoles;
 import com.commerce.memberservice.domain.member.dto.Request.MemberEditInfoDto;
 import com.commerce.memberservice.domain.member.dto.Request.MemberLoginDto;
 import com.commerce.memberservice.domain.member.dto.Request.MemberRegisterDto;
+import com.commerce.memberservice.domain.member.dto.Response.MemberBasicResponse;
 import com.commerce.memberservice.domain.member.dto.Response.MemberEditInfoResponseDto;
+import com.commerce.memberservice.domain.member.dto.Response.MemberListResponseDto;
 import com.commerce.memberservice.domain.member.entity.MemberEntity;
 import com.commerce.memberservice.domain.member.service.MemberService;
-import com.commerce.memberservice.filter.auth.MemberDetail;
 import com.commerce.memberservice.filter.auth.MemberDetailService;
 import com.commerce.memberservice.jwt.JwtTokenInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,9 +44,9 @@ class MemberControllerTest {
 	private MockMvc mockMvc;
 	@Autowired
 	private ObjectMapper objectMapper;
-	@Autowired
+	@MockBean
 	private MemberService memberService;
-	@Autowired
+	@MockBean
 	private MemberDetailService memberDetailService;
 	@Autowired
 	private JwtTokenInfo jwtTokenInfo;
@@ -187,22 +192,6 @@ class MemberControllerTest {
 				.memberPhoneNumber("010-0000-0000")
 				.build();
 
-
-
-			MemberDetail memberDetail = new MemberDetail(member);
-
-			MemberLoginDto memberLoginDto = MemberLoginDto.builder()
-				.loginId("gildong123")
-				.password(bCryptPasswordEncoder.encode("testT12!"))
-				.build();
-
-			Authentication authentication = mock(Authentication.class);
-
-			when(authentication.getPrincipal()).thenReturn(memberDetail);
-			when(authenticationManager.authenticate(any())).thenReturn(authentication);
-
-
-
 			when(memberService.memberEditInfo(anyString(), any())).thenReturn(memberEditInfoResponseDto);
 
 			mockMvc.perform(put("/api/user/gildong123")
@@ -214,7 +203,63 @@ class MemberControllerTest {
 				.andExpect(jsonPath("$.responseData.memberLoginId").value("gildong123"))
 				.andExpect(jsonPath("$.responseData.memberEmail").value("Updated@gmail.com"))
 				.andExpect(jsonPath("$.responseData.memberPhoneNumber").value("010-0000-0000"));
+		}
 
+		@Nested
+		@WithMockUser
+		@DisplayName("회원정보 조회 테스트")
+		public class MemberSearchList {
+			@Test
+			@DisplayName("회원조회 데이터 응답")
+			public void successSearchMemberList() throws Exception {
+				//given
+				List<MemberEntity> member = new ArrayList<>();
+				for (int i = 0; i < 5; i++) {
+					member.add(
+						new MemberEntity(
+							"홍길동" + i,
+							"길동무",
+							"gildong123",
+							"testT12!",
+							"dongmu@gmail.com",
+							"010-1234-1234",
+							UserRoles.USER
+						)
+					);
+				}
+
+				List<MemberBasicResponse> memberBasicResponse = member.stream()
+					.map(MemberBasicResponse::fromEntity)
+					.collect(
+						Collectors.toList());
+
+				MemberListResponseDto memberList = MemberListResponseDto.builder()
+					.memberList(memberBasicResponse)
+					.pageNo(1)
+					.pageSize(1)
+					.totalElements(5)
+					.totalPages(1)
+					.build();
+
+				//when
+				when(memberService.memberList(any(PageRequest.class))).thenReturn(memberList);
+				//then
+				mockMvc.perform(get("/api/user/list")
+						.param("page", "0")
+						.param("pageSize", "2")
+						.param("sort", "createdDate")
+						.contentType(MediaType.APPLICATION_JSON))
+					.andExpect(status().isOk())
+					.andExpect(jsonPath("$.responseData.memberList.[0].memberName").value("홍길동0"))
+					.andExpect(jsonPath("$.responseData.memberList.[1].memberName").value("홍길동1"))
+					.andExpect(jsonPath("$.responseData.memberList.[2].memberName").value("홍길동2"))
+					.andExpect(jsonPath("$.responseData.memberList.[3].memberName").value("홍길동3"))
+					.andExpect(jsonPath("$.responseData.memberList.[4].memberName").value("홍길동4"))
+					.andExpect(jsonPath("$.responseData.pageNo").value(1))
+					.andExpect(jsonPath("$.responseData.pageSize").value(1))
+					.andExpect(jsonPath("$.responseData.totalElements").value(5))
+					.andExpect(jsonPath("$.responseData.totalPages").value(1));
+			}
 		}
 	}
 }
