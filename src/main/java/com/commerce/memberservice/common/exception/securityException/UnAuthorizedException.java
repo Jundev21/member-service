@@ -31,6 +31,7 @@ public class UnAuthorizedException implements AuthenticationEntryPoint {
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException
 	) throws IOException, ServletException {
+		log.info("spring security 에러 체크");
 		HttpStatus errorCode = null;
 		String errorMessage = null;
 		if(authException instanceof BadCredentialsException || authException instanceof InternalAuthenticationServiceException){

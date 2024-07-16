@@ -41,18 +41,22 @@ public class JwtFilter extends OncePerRequestFilter {
 			// 토큰이 없는 상태일경우
 			if (getHeader == null || !getHeader.contains(bearerToken)) {
 				filterChain.doFilter(request, response);
-				return;
 			} else {
 				// 토큰이 있는 상태임으로 토큰을 추출하여 사용자 아이디를 administrater filter 로 전송하여
 				// 데이터가 있는지 확인한다. 있을 경우에는 서비스를 이용 할 수 있도록 통과시키고 없는 경우는 취소시킨다.
 
 				jwtToken = getHeader.split(" ")[1].trim();
 
+				log.error("토큰 유효 체크 전 준비단계");
+
 				if (jwtTokenInfo.isValidToken(jwtToken)) {
+					log.error("토큰 유효 체크 완료");
 					log.error(ErrorCode.INVALID_TOKEN.getMsg());
 					filterChain.doFilter(request, response);
 					return;
 				}
+
+				log.error("토큰 유효 체크 완료 후 다음 프로세스 진행중");
 
 				String userLoginId = jwtTokenInfo.extractLoginId(jwtToken);
 
@@ -68,11 +72,12 @@ public class JwtFilter extends OncePerRequestFilter {
 				authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				filterChain.doFilter(request, response);
+
+				System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 			}
 		} catch (RuntimeException e) {
 			log.error("토큰 필터링 스킵");
 			filterChain.doFilter(request, response);
-			return;
 		}
 
 	}

@@ -11,9 +11,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
 //jwt 에 대한정보들 - jwt 유효기간, jwt 정보 추출,
 @Component
+@Slf4j
 public class JwtTokenInfo {
 
 	@Value("${jwt.secret.key}")
@@ -46,7 +48,10 @@ public class JwtTokenInfo {
 	}
 
 	public boolean isValidToken(String jwt){
+		log.error("현재 토큰 " + jwt);
+		log.error("토큰 유효 체크 중");
 		Date expriedDate = extractClaim(jwt).getExpiration();
+		log.error("유효기간" + expriedDate);
 		return expriedDate.before(new Date());
 	}
 
@@ -56,7 +61,8 @@ public class JwtTokenInfo {
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
 
-	//JWT는 Claim를 JSON형태로 표현
+	// JWT는 Claim를 JSON형태로 표현
+	// parseClaimsJws 에서 jwt 추출 할때 유효기간이 넘어가면 자동으로 에러 반환함.
 	public Claims extractClaim(String jwt){
 		return Jwts.parserBuilder()
 			.setSigningKey(getKey(secretKey))
